@@ -1,0 +1,49 @@
+service: wssample
+
+frameworkVersion: ">=2.0.0 <3.0.0"
+
+provider:
+  name: aws
+  runtime: go1.x
+  endpointType: regional
+  apiGateway:
+    binaryMediaTypes:
+      - '*/*'
+  region: ${env:AWS_REGION, 'ap-southeast-1'}
+
+  environment:
+    AWS_ACCOUNT_ID: !Ref AWS::AccountId
+
+package:
+    individually: true
+    exclude:
+        - "**/*"
+    include:
+        - "bin/*"
+
+plugins:
+    - serverless-plugin-scripts
+
+custom:
+    scripts:
+        hooks:
+            "package:createDeploymentArtifacts": make -j
+
+functions:
+  wsgateway:
+    name: wsgateway
+    handler: wsgateway
+    memorySize: 128
+    timeout: 30
+    package:
+        artifact: bin/wsgateway.zip
+    events:
+        - websocket:
+            route: $connect
+        - websocket:
+            route: $disconnect
+        - websocket:
+            route: $default
+        - websocket:
+            route: public/ping
+

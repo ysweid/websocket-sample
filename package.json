@@ -1,0 +1,8 @@
+{
+  "name": "wssample",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {
+    "serverless-plugin-scripts": "^1.0.2"
+  }
+}
